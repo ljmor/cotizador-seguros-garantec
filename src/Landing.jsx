@@ -1,6 +1,5 @@
-"use client"
-
 import React, { useState } from "react"
+import { LuHeartHandshake } from "react-icons/lu";
 import {
   Box,
   Typography,
@@ -18,32 +17,13 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   Divider,
+  Icon,
 } from "@mui/material"
 import { Favorite, FavoriteBorder, Edit, Add, Check } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
-
-// Iconos personalizados para los tipos de seguro
-const HeartIcon = ({ size = 40 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-)
-
-const PersonIcon = ({ size = 40 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 2a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5zm0 13c5.523 0 10 2.238 10 5v2H2v-2c0-2.762 4.477-5 10-5z" />
-    <path d="M12 8v4M10 10h4" />
-  </svg>
-)
-
-const CarIcon = ({ size = 40 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M16 6l3 4h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1a3 3 0 0 1-3 3 3 3 0 0 1-3-3H9a3 3 0 0 1-3 3 3 3 0 0 1-3-3H2a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h2l3-4h9z" />
-    <circle cx="7" cy="16" r="1" />
-    <circle cx="17" cy="16" r="1" />
-  </svg>
-)
-
+import { FaCar, FaHandHoldingHeart, FaRibbon, FaStethoscope } from "react-icons/fa";
+import { FaUserDoctor } from "react-icons/fa6";
+import { BsHeartPulse } from "react-icons/bs";
 
 // Componentes estilizados
 const StyledSidebar = styled(Box)(({ theme }) => ({
@@ -89,24 +69,6 @@ const StyledLabel = styled(Typography)(({ theme }) => ({
   },
 }))
 
-const InsuranceTypeIcon = styled(Avatar)(({ theme }) => ({
-  backgroundColor: "#FFEB3B",
-  color: "#333",
-  width: 80,
-  height: 80,
-  "& svg": {
-    width: 40,
-    height: 40,
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: 48,
-    height: 48,
-    "& svg": {
-      width: 24,
-      height: 24,
-    },
-  },
-}))
 
 const HeroSection = styled(Paper)(({ theme }) => ({
   backgroundColor: "#6366F1",
@@ -160,10 +122,10 @@ export const Landing = () => {
     {
       id: 1,
       type: "Vida",
-      name: "Carlos R.",
-      location: "Quito",
+      name: "Juan G.",
+      location: "Loja",
       status: "Aguardando confirmación",
-      price: "$18.90",
+      price: "$25.99",
       period: "mes",
       time: "Hoy, 10:32 a.m.",
     },
@@ -217,17 +179,32 @@ export const Landing = () => {
         }}
       >
         {/* Hero Section */}
-        {/* Hero Section */}
         <HeroSection elevation={0}>
-          <Grid container spacing={4} alignItems="stretch" justifyContent="space-between" sx={{ minHeight: "200px" }}>
-            {/* Texto alineado abajo a la izquierda */}
-            <Grid item xs={12} md={6} sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-              <Box>
+          <Grid container spacing={4} justifyContent="space-between" sx={{ minHeight: "200px" }}>
+            {/* Texto alineado abajo a la izquierda (centrado en xs) */}
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: { xs: "center", md: "flex-end" }, // Centra el bloque verticalmente en xs
+                alignItems: { xs: "center", md: "flex-start" },   // Centra el bloque horizontalmente en xs
+              }}
+            >
+              <Box
+                sx={{
+                  textAlign: { xs: "center", md: "left" }, // Centra el texto interno en xs
+                  p: { xs: 2, md: 0 }, // Agrega un poco de padding en xs si el fondo blanco se ve muy ajustado
+                }}
+              >
                 <Typography
                   variant="h4"
                   component="h1"
                   fontWeight="bold"
                   gutterBottom
+                  mb={-1}
                   sx={{ fontSize: { xs: "1.8rem", sm: "2.3rem", md: "2.5rem" } }}
                 >
                   Inicia tu cotización
@@ -240,31 +217,103 @@ export const Landing = () => {
 
             {/* Iconos */}
             <Grid item xs={12} md={6} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Grid container spacing={4} justifyContent="center">
+              <Grid container spacing={{ xs: 2, md: 4 }} justifyContent="center">
+                {/* Icono Vida */}
                 <Grid item xs={4} sx={{ textAlign: "center" }}>
-                  <InsuranceTypeIcon>
-                    <HeartIcon size={48} />
-                  </InsuranceTypeIcon>
-                  <Typography variant="body1" sx={{ mt: 1, fontSize: { xs: "0.9rem", sm: "1.1rem" } }}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mb: 1,
+                      fontSize: { xs: '20px', sm: '24px', md: '26px' }, // Ajustado para '24px' en md sería '1.5rem' si base es 16px. Uso 1.25rem como ejemplo.
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Vida
                   </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "white",
+                      width: { xs: "70px", sm: "90px", md: "115px" },    // Icono más pequeño en xs y sm
+                      height: { xs: "70px", sm: "90px", md: "115px" },   // Icono más pequeño en xs y sm
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mx: "auto", // Asegura que el Box se centre en su celda
+                      boxShadow: '0px 4px 12px rgba(0,0,0,0.1)', // Ejemplo de sombra suave
+                    }}
+                  >
+                    <FaHandHoldingHeart
+                      color="#fcd19c"
+                      // El tamaño del icono se controla con fontSize vía sx
+                      style={{ display: 'block' }} // Ayuda a evitar espacio extra debajo del svg en algunos casos
+                      sx={{ fontSize: { xs: "28px", sm: "35px", md: "45px" } }}
+                    />
+                  </Box>
                 </Grid>
+                {/* Icono Salud */}
                 <Grid item xs={4} sx={{ textAlign: "center" }}>
-                  <InsuranceTypeIcon>
-                    <HeartIcon size={48} />
-                  </InsuranceTypeIcon>
-
-                  <Typography variant="body1" sx={{ mt: 1, fontSize: { xs: "0.9rem", sm: "1.1rem" } }}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mb: 1,
+                      fontSize: { xs: '20px', sm: '24px', md: '26px' },
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Salud
                   </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "white",
+                      width: { xs: "70px", sm: "90px", md: "115px" },
+                      height: { xs: "70px", sm: "90px", md: "115px" },
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mx: "auto",
+                      boxShadow: '0px 4px 12px rgba(0,0,0,0.1)',
+                    }}
+                  >
+                    <FaStethoscope
+                      color="black"
+                      style={{ display: 'block' }}
+                      sx={{ fontSize: { xs: "28px", sm: "35px", md: "45px" } }}
+                    />
+                  </Box>
                 </Grid>
+                {/* Icono Auto */}
                 <Grid item xs={4} sx={{ textAlign: "center" }}>
-                  <InsuranceTypeIcon>
-                    <CarIcon size={48} />
-                  </InsuranceTypeIcon>
-                  <Typography variant="body1" sx={{ mt: 1, fontSize: { xs: "0.9rem", sm: "1.1rem" } }}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mb: 1,
+                      fontSize: { xs: '20px', sm: '24px', md: '26px' },
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Auto
                   </Typography>
+                  <Box
+                    sx={{
+                      backgroundColor: "white",
+                      width: { xs: "70px", sm: "90px", md: "115px" },
+                      height: { xs: "70px", sm: "90px", md: "115px" },
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mx: "auto",
+                      boxShadow: '0px 4px 12px rgba(0,0,0,0.1)',
+                    }}
+                  >
+                    <FaCar
+                      color="black"
+                      style={{ display: 'block' }}
+                      sx={{ fontSize: { xs: "28px", sm: "35px", md: "45px" } }}
+                    />
+                  </Box>
                 </Grid>
               </Grid>
             </Grid>
@@ -275,8 +324,8 @@ export const Landing = () => {
         {/* Tabs */}
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <StyledTabs value={tabValue} onChange={handleTabChange} aria-label="navigation tabs" variant="fullWidth">
-            <StyledTab icon={<Check />} label="Cotizaciones" iconPosition="start" />
-            <StyledTab label="Contactos" />
+            <StyledTab sx={{ borderRadius: 3, textTransform: 'capitalize' }} label="Cotizaciones incompletas" iconPosition="start" />
+            <StyledTab sx={{ borderRadius: 3, textTransform: 'capitalize' }} label="Cotizaciones completas" />
           </StyledTabs>
         </Box>
 
@@ -305,9 +354,9 @@ export const Landing = () => {
                   <ListItem alignItems="flex-start" sx={{ px: 0 }}>
                     <ListItemAvatar>
                       <Avatar sx={{ bgcolor: "grey.300", width: { xs: 40, sm: 56 }, height: { xs: 40, sm: 56 } }}>
-                        {quote.type === "Vida" && <HeartIcon />}
-                        {quote.type === "Salud" && <PersonIcon />}
-                        {quote.type === "Auto" && <CarIcon />}
+                        {quote.type === "Vida"}
+                        {quote.type === "Salud"}
+                        {quote.type === "Auto"}
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText

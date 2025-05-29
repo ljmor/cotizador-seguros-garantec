@@ -18,7 +18,7 @@ El proceso actual para **cotizar seguros de vehículos es lento, manual y poco e
 
 ### Objetivo General
 
-Desarrollar una **plataforma digital moderna, eficiente y profesional** que permita a los asesores de seguros **cotizar pólizas de forma rápida y centralizada**, reduciendo los tiempos de cotización a **menos de 3 minutos**. Se busca:
+Desarrollar una **plataforma digital moderna, eficiente y profesional** que permita a los asesores de seguros **cotizar de forma rápida y centralizada**, reduciendo los tiempos de cotización a **menos de 3 minutos**. Se busca:
 
 - Optimizar el flujo de trabajo de los asesores.
 - Eliminar procesos manuales.
