@@ -1,404 +1,179 @@
 import React, { useState } from 'react';
-import {
-    Box,
-    Grid,
-    Typography,
-    TextField,
-    Button,
-    Card,
-    CardContent,
-    ToggleButtonGroup,
-    ToggleButton,
-    Avatar,
-    Stepper,
-    Step,
-    StepLabel,
-    StepConnector,
-    stepConnectorClasses
-} from '@mui/material';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-import { 
-    ArrowBack, 
-    CloudDownloadOutlined, 
-    ShareOutlined, 
-    CompareArrowsOutlined,
-    LocalHospital, // Icono para Gastos Mayores
-    FavoriteBorder // Icono para Salud
-} from '@mui/icons-material';
+import { GiHealthIncrease } from 'react-icons/gi';
+import { MdOutlineHealthAndSafety } from 'react-icons/md';
+// --- Iconos SVG para el formulario ---
+const BackArrowIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+);
 
-// --- THEME AND STYLED COMPONENTS --- //
+const CheckCircleIcon = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+    </svg>
+);
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#4F46E5', // Azul/Morado principal
-        },
-        secondary: {
-            main: '#14B8A6', // Turquesa para selecciones y acentos
-        },
-        background: {
-            default: '#F7F8FC', // Fondo ligeramente gris/azulado
-            paper: '#FFFFFF',
-        },
-        text: {
-            primary: '#1F2937',
-            secondary: '#6B7280',
-        },
-        divider: '#E5E7EB',
-    },
-    typography: {
-        fontFamily: 'Inter, sans-serif',
-        h4: {
-            fontWeight: 700,
-            color: '#1F2937',
-        },
-        h6: {
-            fontWeight: 700,
-        },
-    },
-    components: {
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    borderRadius: '8px',
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    boxShadow: 'none',
-                },
-                containedPrimary: {
-                    color: 'white',
-                },
-                outlined: {
-                    borderWidth: '1px',
-                }
-            },
-        },
-        MuiCard: {
-            styleOverrides: {
-                root: {
-                    borderRadius: '16px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                },
-            },
-        },
-        MuiOutlinedInput: {
-            styleOverrides: {
-                root: {
-                    borderRadius: '8px',
-                    backgroundColor: '#FFFFFF',
-                },
-            },
-        },
-        MuiToggleButton: {
-            styleOverrides: {
-                root: {
-                    borderRadius: '8px !important',
-                    border: '1px solid #D1D5DB !important',
-                    textTransform: 'none',
-                    '&.Mui-selected': {
-                        backgroundColor: '#EEF2FF',
-                        color: '#4F46E5',
-                        '&:hover': {
-                            backgroundColor: '#E0E7FF',
-                        },
-                    },
-                },
-            },
-        },
-        MuiStepLabel: {
-            styleOverrides: {
-                label: {
-                     '&.Mui-active': {
-                        fontWeight: 'bold',
-                     },
-                     '&.Mui-completed': {
-                        fontWeight: 'bold',
-                     }
-                }
-            }
-        }
-    },
-});
+const GastosMayoresIcon = () => (
+    <GiHealthIncrease  className="h-8 w-8 mx-auto mb-2 text-pink-500"/>
+      
+);
 
-const CustomConnector = styled(StepConnector)(({ theme }) => ({
-  [`&.${stepConnectorClasses.alternativeLabel}`]: {
-    top: 10,
-    left: 'calc(-50% + 16px)',
-    right: 'calc(50% + 16px)',
-  },
-  [`&.${stepConnectorClasses.active}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: theme.palette.secondary.main,
-    },
-  },
-  [`&.${stepConnectorClasses.completed}`]: {
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: theme.palette.secondary.main,
-    },
-  },
-  [`& .${stepConnectorClasses.line}`]: {
-    borderColor: theme.palette.divider,
-    borderTopWidth: 3,
-    borderRadius: 1,
-  },
-}));
+const SaludIcon = () => (
+     <MdOutlineHealthAndSafety  className="h-8 w-8 mx-auto mb-2 text-yellow-500"/>
 
-const SelectionCard = styled(Card)(({ theme, selected }) => ({
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    cursor: 'pointer',
-    height: '100%',
-    border: `2px solid ${selected ? theme.palette.secondary.main : 'transparent'}`,
-    backgroundColor: selected ? '#F0FDF4' : theme.palette.background.paper,
-    boxShadow: 'none',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '&:hover': {
-        borderColor: theme.palette.secondary.main,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-    },
-}));
+);
 
-// Mock Data
-const insurancePlans = [
-    {
-        logo: 'https://placehold.co/60x60/FBBF24/FFFFFF?text=S',
-        company: 'SWEADEN',
-        subCompany: 'Compañia de Seguros S.A.',
-        name: 'Seguro Vida Colectiva',
-        price: '14,90',
-        coverage: '25000',
-        psychology: '3 Sesiones',
-        salary: '700',
-    },
-    {
-        logo: 'https://placehold.co/60x60/F97316/FFFFFF?text=H',
-        company: 'Hispana de Seguros',
-        name: 'Seguro Vida Oncológico',
-        price: '19,90',
-        coverage: '30000',
-        psychology: '4 Sesiones',
-        salary: '900',
-    },
-    {
-        logo: 'https://placehold.co/60x60/3B82F6/FFFFFF?text=L',
-        company: 'Latina SEGUROS',
-        name: 'Seguro Cáncer Care',
-        price: '24,90',
-        coverage: '40000',
-        psychology: '5 Sesiones',
-        salary: '1000',
-    },
+// --- Datos de ejemplo para la pantalla de comparación ---
+const comparisonData = [
+    { logo: "https://placehold.co/150x50/eef2ff/4338ca?text=Sweaden", name: "Seguro Vida Colectiva", price: "$14,90 / mes", details: ["Monto de cobertura: $25000", "Terapia Psicológica: 3 Sesiones", "Sueldo Mensual por 1 año: $700"]},
+    { logo: "https://placehold.co/150x50/fffbeb/b45309?text=Hispana+Seguros", name: "Seguro Vida Oncológico", price: "$19,90 / mes", details: ["Monto de cobertura: $30000", "Terapia Psicológica: 4 Sesiones", "Sueldo Mensual por 1 año: $800"]},
+    { logo: "https://placehold.co/150x50/e0f2fe/0891b2?text=Latina+Seguros", name: "Seguro Cáncer Care", price: "$24,90 / mes", details: ["Monto de cobertura: $40000", "Terapia Psicológica: 5 Sesiones", "Sueldo Mensual por 1 año: $1000"]}
 ];
 
-const steps = ['Personal', 'Dependientes', 'Planes'];
 
-// --- MAIN APP COMPONENT --- //
-export default function App() {
-    const [activeStep, setActiveStep] = useState(0);
-    const [formData, setFormData] = useState({
-        insuranceType: 'Salud',
-        searchPreference: 'Respaldo de la aseguradora',
-        isFamily: 'No',
-    });
+// --- Componentes Reutilizables ---
+const FormInput = ({ label, ...props }) => (
+    <div>
+        <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
+        <input {...props} className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" />
+    </div>
+);
 
-    const handleFormChange = (key, value) => {
-        setFormData(prev => ({ ...prev, [key]: value }));
-    };
+const InsuranceTypeCard = ({ icon, label, selected, onClick }) => (
+    <div onClick={onClick} className={`relative text-center p-4 border rounded-xl cursor-pointer transition-all duration-300 ${ selected ? 'bg-white border-teal-400 shadow-lg scale-105' : 'bg-gray-50 border-gray-200 hover:bg-white hover:shadow-md'}`}>
+        {selected && <CheckCircleIcon className="absolute top-2 right-2 h-5 w-5 text-teal-400" />}
+        {icon}
+        <span className="text-sm font-semibold text-gray-700">{label}</span>
+    </div>
+);
 
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
-
-    const handleBack = () => {
-        if (activeStep > 0) {
-            setActiveStep((prevActiveStep) => prevActiveStep - 1);
-        } else {
-             console.log("Volviendo a la página principal");
-        }
-    };
-    
-    const getStepContent = (step) => {
-        switch (step) {
-            case 0:
-                return <PersonalForm onNext={handleNext} formData={formData} setFormData={handleFormChange} />;
-            case 1:
-                return <DependientesForm onNext={handleNext} formData={formData} setFormData={handleFormChange} />;
-            case 2:
-                return <ResultsView plans={insurancePlans} />;
-            default:
-                return 'Unknown step';
-        }
-    };
-
+// --- Componente de Barra de Pasos ---
+const StepBar = ({ steps, currentStep }) => {
     return (
-        <ThemeProvider theme={theme}>
-            <Box sx={{ minHeight: '100vh', backgroundColor: 'background.default', p: { xs: 2, sm: 3, md: 4 } }}>
-                <Box sx={{ maxWidth: '1200px', mx: 'auto' }}>
-                    <Box display="flex" alignItems="center" mb={4}>
-                        <Button startIcon={<ArrowBack />} onClick={handleBack} sx={{ color: 'text.secondary', fontWeight: 400, mr: {xs: 1, md: 2} }}>
-                            Volver
-                        </Button>
-                        <Box sx={{ flexGrow: 1, mx: { xs: 1, sm: 2 } }}>
-                            <Stepper activeStep={activeStep} alternativeLabel connector={<CustomConnector />}>
-                                {steps.map((label) => (
-                                    <Step key={label}><StepLabel>{label}</StepLabel></Step>
-                                ))}
-                            </Stepper>
-                        </Box>
-                        <Typography variant="h6" component="div" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
-                            abcseguros
-                        </Typography>
-                    </Box>
-                    {getStepContent(activeStep)}
-                </Box>
-            </Box>
-        </ThemeProvider>
-    );
-}
-
-// --- STEP 1: PERSONAL FORM --- //
-const PersonalForm = ({ onNext, formData, setFormData }) => {
-    return (
-       <Grid container spacing={{ xs: 4, md: 6 }}>
-            <Grid item xs={12} md={7} lg={6}>
-                <Box>
-                    <Typography variant="h4" gutterBottom>Cotizador de Salud</Typography>
-                    <Typography variant="body1" color="text.secondary" mb={4}>Selecione el tipo de seguro de Salud</Typography>
-                    <Grid container spacing={2} mb={5}>
-                        <Grid item xs={6}>
-                            <SelectionCard selected={formData.insuranceType === 'Gastos Mayores'} onClick={() => setFormData('insuranceType', 'Gastos Mayores')}>
-                                <LocalHospital sx={{ fontSize: 40, color: formData.insuranceType === 'Gastos Mayores' ? 'secondary.main' : '#F472B6', mb: 1 }} />
-                                <Typography variant="h6" fontSize="1rem">Gastos Mayores</Typography>
-                            </SelectionCard>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <SelectionCard selected={formData.insuranceType === 'Salud'} onClick={() => setFormData('insuranceType', 'Salud')}>
-                                <FavoriteBorder sx={{ fontSize: 40, color: formData.insuranceType === 'Salud' ? 'secondary.main' : '#FBBF24', mb: 1 }} />
-                                <Typography variant="h6" fontSize="1rem">Salud</Typography>
-                            </SelectionCard>
-                        </Grid>
-                    </Grid>
-
-                    <Typography variant="h6" gutterBottom>Formulário de Seguro</Typography>
-                    <Typography variant="body2" color="text.secondary" mb={2}>Datos personales</Typography>
-                    <Grid container spacing={2} mb={5}>
-                        <Grid item xs={12} sm={6}><TextField fullWidth label="Nombres completos" defaultValue="Maria Luisa" /></Grid>
-                        <Grid item xs={12} sm={6}><TextField fullWidth label="Apellidos completos" defaultValue="Alvarez Piedra" /></Grid>
-                        <Grid item xs={12} sm={6}><TextField fullWidth label="Fecha de nacimiento" defaultValue="06/05/2000" /></Grid>
-                    </Grid>
-                    <Button variant="contained" size="large" fullWidth onClick={onNext} sx={{ py: 1.5 }}>
-                        Siguiente
-                    </Button>
-                </Box>
-            </Grid>
-            <FormImage />
-        </Grid>
-    );
-}
-
-// --- STEP 2: DEPENDIENTES FORM --- //
-const DependientesForm = ({ onNext, formData, setFormData }) => {
-    return (
-        <Grid container spacing={{ xs: 4, md: 6 }}>
-            <Grid item xs={12} md={7} lg={6}>
-                <Box>
-                    <Typography variant="h4" gutterBottom>Perfil del asegurado</Typography>
-                     <Typography variant="body1" color="text.secondary" mb={4}>Complete la información de los acompañantes.</Typography>
-                    
-                    <Typography variant="h6" gutterBottom>Perfil del asegurado y acompañantes</Typography>
-                    <Typography variant="body2" color="text.secondary" mb={2}>¿Qué busca en un seguro?</Typography>
-                    <ToggleButtonGroup value={formData.searchPreference} exclusive onChange={(e, val) => val && setFormData('searchPreference', val)} fullWidth sx={{ mb: 4, '& .MuiToggleButton-root': {flex: 1} }}>
-                        <ToggleButton value="Beneficios">Beneficios</ToggleButton>
-                        <ToggleButton value="Respaldo de la aseguradora">Respaldo de la aseguradora</ToggleButton>
-                        <ToggleButton value="Precio">Precio</ToggleButton>
-                    </ToggleButtonGroup>
-
-                    <Typography variant="body2" color="text.secondary" mb={1}>¿Es una cotización familiar?</Typography>
-                    <ToggleButtonGroup value={formData.isFamily} exclusive onChange={(e, val) => val && setFormData('isFamily', val)} sx={{ mb: 4 }}>
-                        <ToggleButton value="Si">Sí</ToggleButton>
-                        <ToggleButton value="No">No</ToggleButton>
-                    </ToggleButtonGroup>
-                     {formData.isFamily === 'Si' && (
-                        <Grid container spacing={2} mb={2}>
-                             <Grid item xs={12} sm={6}>
-                                <TextField fullWidth label="Nombre del familiar" />
-                            </Grid>
-                             <Grid item xs={12} sm={6}>
-                                <TextField fullWidth label="Edad" />
-                            </Grid>
-                        </Grid>
+        <div className="flex items-center w-full mb-8">
+            {steps.map((step, index) => (
+                <React.Fragment key={step}>
+                    <div className="flex flex-col items-center">
+                        <div className={`w-full text-center text-sm font-semibold ${index <= currentStep ? 'text-teal-500' : 'text-gray-400'}`}>
+                            {step}
+                        </div>
+                    </div>
+                    {index < steps.length - 1 && (
+                        <div className={`flex-auto border-t-2 transition-colors duration-500 mx-4 ${index < currentStep ? 'border-teal-400' : 'border-gray-200'}`}></div>
                     )}
+                </React.Fragment>
+            ))}
+        </div>
+    );
+};
 
-                    <Button variant="contained" size="large" fullWidth onClick={onNext} sx={{ py: 1.5 }}>
-                        Cotizar
-                    </Button>
-                </Box>
-            </Grid>
-            <FormImage />
-        </Grid>
-    )
-}
 
-// --- Reusable Image Component --- //
-const FormImage = () => (
-    <Grid item md={5} lg={6} sx={{ display: { xs: 'none', md: 'block' } }}>
-        <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '24px', overflow: 'hidden', backgroundColor: '#FFE4E6' }}>
-           <img 
-               src="https://plus.unsplash.com/premium_photo-1675686363489-21a2a573b2c6?q=80&w=1974&auto=format&fit=crop"
-               alt="Estetoscopio en forma de corazón sostenido por manos" 
-               style={{ width: '80%', height: 'auto', objectFit: 'contain' }}
-            />
-        </Box>
-    </Grid>
+// --- Componentes de Pasos del Formulario ---
+const PersonalDataStep = ({ onNext }) => (
+    <>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Formulário de Seguro</h2>
+        <p className="text-gray-500 mb-6">Datos personales</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormInput label="Nombres completos" type="text" defaultValue="Maria Luisa" />
+            <FormInput label="Apellidos completos" type="text" defaultValue="Alvarez Piedra" />
+            <FormInput label="Fecha de nacimiento" type="date" defaultValue="06/05/2000" />
+        </div>
+        <div className="flex justify-end gap-3 mt-8">
+            <button onClick={onNext} className="w-full md:w-auto px-6 py-2 rounded-lg bg-teal-400 text-white font-semibold hover:bg-teal-500 transition shadow">Siguiente</button>
+        </div>
+    </>
+);
+
+const ProfileStep = ({ onQuote }) => {
+    const [isFamily, setIsFamily] = useState(false);
+    return (
+        <>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Perfil del asegurado y acompañantes</h2>
+            <div className="space-y-6 mt-6">
+                <div><label className="block text-sm font-medium text-gray-600 mb-2">¿Qué busca en un seguro?</label><div className="flex gap-2"><button className="flex-1 py-2 px-4 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">Beneficios</button><button className="flex-1 py-2 px-4 rounded-lg bg-indigo-100 text-indigo-700 border border-indigo-200 transition">Respaldo de la aseguradora</button><button className="flex-1 py-2 px-4 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition">Precio</button></div></div>
+                <div><label className="block text-sm font-medium text-gray-600 mb-2">¿Es una cotización familiar?</label><div className="flex gap-2"><button onClick={() => setIsFamily(true)} className={`py-2 px-6 rounded-lg border transition ${isFamily ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300'}`}>Sí</button><button onClick={() => setIsFamily(false)} className={`py-2 px-6 rounded-lg border transition ${!isFamily ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300'}`}>No</button></div></div>
+            </div>
+            <div className="flex justify-end mt-8"><button onClick={onQuote} className="px-8 py-3 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition shadow-lg">Cotizar</button></div>
+        </>
+    );
+};
+
+const ComparisonStep = () => (
+    <div>
+        <h1 className="text-3xl md:text-4xl font-bold text-indigo-800">Cotizador de Salud</h1>
+        <p className="text-gray-500 mt-1 mb-8">Seleccione la mejor opcion de seguro de Salud</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {comparisonData.map((plan, index) => (
+                <div key={index} className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col shadow-md hover:shadow-xl transition-shadow">
+                    <div className="flex-grow">
+                        <div className="flex justify-center mb-4"><img src={plan.logo} alt={`Logo de ${plan.name}`} className="h-12"/></div>
+                        <h3 className="text-xl font-bold text-center text-gray-800">{plan.name}</h3>
+                        <p className="text-lg font-semibold text-center text-gray-600 my-2">{plan.price}</p>
+                        <ul className="text-sm text-gray-500 space-y-2 mt-4 list-disc list-inside">{plan.details.map((detail, i) => <li key={i}>{detail}</li>)}</ul>
+                    </div>
+                    <div className="mt-6 text-center text-xs space-x-2"><a href="#" className="text-indigo-600 hover:underline">Descargar plan</a><span>•</span><a href="#" className="text-indigo-600 hover:underline">Compartir plan</a></div>
+                    <button className="w-full mt-4 py-3 rounded-lg bg-teal-400 text-white font-bold hover:bg-teal-500 transition shadow">Seleccionar este plan</button>
+                </div>
+            ))}
+        </div>
+    </div>
 );
 
 
-// --- RESULTS VIEW COMPONENT --- //
-const ResultsView = ({ plans }) => {
+// --- Componente Principal del Formulario ---
+export default function App() {
+    const [step, setStep] = useState(0); // 0: Personal, 1: Dependientes, 2: Planes
+    const [selectedInsurance, setSelectedInsurance] = useState('salud');
+    const stepLabels = ['Personal', 'Dependientes', 'Planes'];
+
+    const handleNext = () => setStep(prev => Math.min(prev + 1, stepLabels.length - 1));
+    const handleBack = () => {
+        if (step > 0) {
+            setStep(prev => prev - 1);
+        } else {
+            console.log("Navegar a la página anterior (ej. Landing)"); // Simula volver a una página anterior
+        }
+    };
+    
     return (
-        <Box>
-            <Typography variant="h4" gutterBottom>Cotizador de Salud</Typography>
-            <Typography variant="body1" color="text.secondary" mb={4}>Selecione la mejor opcion de seguro de Salud</Typography>
-            <Grid container spacing={3}>
-                {plans.map((plan, index) => (
-                    <Grid item xs={12} md={6} lg={4} key={index}>
-                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Box display="flex" alignItems="center" mb={2}>
-                                    <Avatar src={plan.logo} sx={{ width: 60, height: 60, mr: 2, bgcolor: 'grey.200' }} variant="rounded" />
-                                    <Box>
-                                        <Typography variant="h6" fontSize="1.1rem">{plan.company}</Typography>
-                                        {plan.subCompany && <Typography variant="caption" color="text.secondary">{plan.subCompany}</Typography>}
-                                    </Box>
-                                </Box>
-                                <Typography variant="h6" component="h3" gutterBottom>{plan.name}</Typography>
-                                <Typography variant="h5" fontWeight="bold" mb={2}>
-                                    ${plan.price}<Typography component="span" color="text.secondary">/mes</Typography>
-                                </Typography>
-                                <Box component="ul" sx={{ pl: 2.5, '& li': { mb: 0.5 } }}>
-                                    <li><Typography variant="body2">Monto de cobertura: ${plan.coverage}</Typography></li>
-                                    <li><Typography variant="body2">Terapia Psicológica: {plan.psychology}</Typography></li>
-                                    <li><Typography variant="body2">Sueldo Mensual por 1 año: ${plan.salary}</Typography></li>
-                                </Box>
-                                <Button size="small" sx={{ mt: 1, p:0 }}>Ver más</Button>
-                            </CardContent>
-                            <Box sx={{ p: 2, pt: 0, borderTop: '1px solid #F3F4F6' }}>
-                                <Grid container spacing={1} mb={2} justifyContent="space-between">
-                                    <Grid item><Button size="small" variant="outlined" sx={{ color: 'text.secondary', borderColor: 'divider' }} startIcon={<CloudDownloadOutlined />}>Descargar</Button></Grid>
-                                    <Grid item><Button size="small" variant="outlined" sx={{ color: 'text.secondary', borderColor: 'divider' }} startIcon={<ShareOutlined />}>Compartir</Button></Grid>
-                                    <Grid item><Button size="small" variant="outlined" sx={{ color: 'text.secondary', borderColor: 'divider' }} startIcon={<CompareArrowsOutlined />}>Comparar</Button></Grid>
-                                </Grid>
-                                <Button variant="contained" color="secondary" fullWidth sx={{ color: 'white' }}>
-                                    Seleccionar este plan
-                                </Button>
-                            </Box>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-        </Box>
+        <div className="bg-white font-sans w-full h-full flex flex-col min-h-screen">
+            <div className="flex flex-col lg:flex-row flex-grow">
+                {/* Contenido principal que se puede desplazar */}
+                <main className="w-full lg:w-3/5 bg-slate-50 p-6 sm:p-8 md:p-12 overflow-y-auto">
+                    
+                    <button onClick={handleBack} className="flex items-center gap-2 text-gray-500 font-semibold hover:text-indigo-600 mb-8 transition">
+                        <BackArrowIcon /> Volver
+                    </button>
+                    
+                    {/* --- CORRECCIÓN: La barra de pasos ahora es visible en todos los pasos --- */}
+                    <StepBar steps={stepLabels} currentStep={step} />
+
+                    {step < 2 && ( // El título y la selección de seguro solo para los pasos del formulario
+                         <>
+                            <h1 className="text-3xl md:text-4xl font-bold text-indigo-800">Cotizador de Salud</h1>
+                            <p className="text-gray-500 mt-2 mb-6">Seleccione el tipo de seguro de Salud</p>
+                            <div className="grid grid-cols-2 gap-4 mb-10">
+                                <InsuranceTypeCard icon={<GastosMayoresIcon/>} label="Gastos Mayores" selected={selectedInsurance === 'gastosMayores'} onClick={() => setSelectedInsurance('gastosMayores')} />
+                                <InsuranceTypeCard icon={<SaludIcon/>} label="Salud" selected={selectedInsurance === 'salud'} onClick={() => setSelectedInsurance('salud')} />
+                            </div>
+                         </>
+                    )}
+
+                    {step === 0 && <PersonalDataStep onNext={handleNext} />}
+                    {step === 1 && <ProfileStep onQuote={handleNext} />}
+                    {step === 2 && <ComparisonStep />}
+
+                </main>
+
+                {/* Panel lateral con la imagen (fijo en pantallas grandes) */}
+                <aside className="hidden lg:block w-1/3 bg-[#6074F3] p-8 sticky top-0 h-screen flex-col items-center justify-center">
+                    <div className="w-full bg-gray-300 rounded-2xl shadow-2xl overflow-hidden aspect-w-9 aspect-h-16">
+                    <img src="./src/photo.png" alt="Estetoscopio" className="w-full h-full object-cover" />
+                    </div>
+                    <p className="text-center mt-6 text-3xl font-bold text-white tracking-wider">abc<span className="font-light">seguros</span></p>
+                </aside>
+            </div>
+        </div>
     );
-};
+}
