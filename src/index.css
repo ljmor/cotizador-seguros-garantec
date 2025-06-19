@@ -1,3 +1,37 @@
+@import "tailwindcss";
+/* Asegúrate de que tus directivas de Tailwind estén al principio del archivo */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Estilos para la Barra de Desplazamiento Minimalista --- */
+/* Funciona en navegadores basados en WebKit (Chrome, Safari, Edge, etc.) */
+
+/* Define el aspecto general de la barra de desplazamiento (ancho y alto) */
+::-webkit-scrollbar {
+  width: 8px;  /* Ancho para la barra vertical */
+  height: 8px; /* Altura para la barra horizontal */
+}
+
+/* Define el "riel" o fondo sobre el que se mueve la barra */
+::-webkit-scrollbar-track {
+  background: transparent; /* Hace el fondo del riel invisible */
+}
+
+/* Define el "pulgar" o la parte móvil y arrastrable de la barra */
+::-webkit-scrollbar-thumb {
+  background-color: #6074F3;    /* Un color gris sutil */
+  border-radius: 20px;       /* Bordes completamente redondeados */
+  border: 3px solid transparent; /* Crea un padding alrededor del pulgar, haciendo que parezca más delgado */
+  background-clip: content-box;
+}
+
+/* Cambia el color del pulgar al pasar el ratón por encima para dar feedback */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6074F3; /* Un gris un poco más oscuro */
+}
+
+
 html {
   font-family: 'Poppins';
 }
