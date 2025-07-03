@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 // Importamos los componentes que actuarán como nuestras "páginas"
 import Landing from './Landing.jsx';
 import Form_Vida from './Cotization_Forms/Form_Vida.jsx';
+import Form_Salud from './Cotization_Forms/Form_Salud.jsx';
+import Contactos from './Pages/Contactos.jsx';
 
 // --- Iconos para la Barra Lateral ---
 // Se ha añadido un icono para "Inicio" y se ajustó el tamaño.
@@ -35,7 +37,7 @@ const StarIcon = ({ className = "h-7 w-7" }) => (
 const sidebarLinks = [
     { id: 'inicio', text: 'Inicio', icon: <HomeIcon />, view: 'landing' },
     { id: 'posibles', text: 'Posibles Clientes', icon: <UserPlusIcon />, view: 'posibles-clientes' },
-    { id: 'clientes', text: 'Clientes', icon: <UsersIcon />, view: 'clientes' },
+    { id: 'contactos', text: 'Contactos', icon: <UsersIcon />, view: 'contactos' },
     { id: 'oportunidades', text: 'Oportunidades', icon: <StarIcon />, view: 'oportunidades' },
 ];
 
@@ -102,10 +104,10 @@ export default function App() {
                 return <Landing navigateTo={navigateTo} />;
             case 'form-vida':
                 return <Form_Vida navigateTo={navigateTo} />;
-            case 'posibles-clientes':
-                return <div className="p-8 text-center"><h1>Vista de Posibles Clientes</h1><p>Contenido futuro.</p></div>;
-            case 'clientes':
-                return <div className="p-8 text-center"><h1>Vista de Clientes</h1><p>Contenido futuro.</p></div>;
+            case 'form-salud':
+                return <Form_Salud navigateTo={navigateTo} />;
+            case 'contactos':
+                return <Contactos navigateTo={navigateTo} />;
             case 'oportunidades':
                 return <div className="p-8 text-center"><h1>Vista de Oportunidades</h1><p>Contenido futuro.</p></div>;
             default:

@@ -84,7 +84,7 @@ export default function Landing({ navigateTo }) {
   // Define los tipos de seguro y la vista a la que cada uno debe navegar.
   const insuranceTypes = [
     { id: 'vida', name: 'Vida', icon: <HandHeartIcon />, view: 'form-vida' },
-    { id: 'salud', name: 'Salud', icon: <StethoscopeIcon />, view: 'form-salud' }, // Vista futura
+    { id: 'salud', name: 'Salud', icon: <StethoscopeIcon />, view: 'form-salud' }, 
     { id: 'auto', name: 'Auto', icon: <CarIcon />, view: 'form-auto' },         // Vista futura
   ];
 
