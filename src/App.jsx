@@ -7,8 +7,6 @@ import Form_Salud from './Cotization_Forms/Form_Salud.jsx';
 import Contactos from './Pages/Contactos.jsx';
 
 // --- Iconos para la Barra Lateral ---
-// Se ha añadido un icono para "Inicio" y se ajustó el tamaño.
-
 const HomeIcon = ({ className = "h-7 w-7" }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -79,7 +77,6 @@ const MobileTopBar = ({ navigateTo, currentView }) => {
                 >
                     <div className="bg-white p-2 rounded-lg shadow-md">
                         <div className="text-[#6074F3]">
-                            {/* Hacemos los iconos un poco más pequeños para la barra móvil */}
                             {React.cloneElement(link.icon, { className: "h-6 w-6" })}
                         </div>
                     </div>
@@ -93,19 +90,27 @@ const MobileTopBar = ({ navigateTo, currentView }) => {
 // --- Componente Principal de la Aplicación ---
 export default function App() {
     const [currentView, setCurrentView] = useState('landing');
+    
+    // --- AÑADIDO: Estado para guardar el ID de la cotización a editar ---
+    const [editingId, setEditingId] = useState(null);
 
-    const navigateTo = (view) => {
+    // --- MODIFICADO: navigateTo ahora puede recibir un ID ---
+    const navigateTo = (view, id = null) => {
+        setEditingId(id); // Guarda el ID (o null si es una vista nueva)
         setCurrentView(view);
     };
 
+    // --- MODIFICADO: renderView ahora pasa el ID a los formularios ---
     const renderView = () => {
         switch (currentView) {
             case 'landing':
                 return <Landing navigateTo={navigateTo} />;
             case 'form-vida':
-                return <Form_Vida navigateTo={navigateTo} />;
+                // Le pasamos el ID para editar. Será 'null' si es una cotización nueva.
+                return <Form_Vida navigateTo={navigateTo} cotizacionIdParaEditar={editingId} />;
             case 'form-salud':
-                return <Form_Salud navigateTo={navigateTo} />;
+                // Le pasamos el ID para editar. Será 'null' si es una cotización nueva.
+                return <Form_Salud navigateTo={navigateTo} cotizacionIdParaEditar={editingId} />;
             case 'contactos':
                 return <Contactos navigateTo={navigateTo} />;
             case 'oportunidades':
@@ -117,11 +122,9 @@ export default function App() {
 
     return (
         <div className="bg-gray-50 flex min-h-screen font-sans">
-            {/* Se renderizan ambas barras de navegación, pero se muestran condicionalmente con CSS */}
             <DesktopSidebar navigateTo={navigateTo} currentView={currentView} />
             <MobileTopBar navigateTo={navigateTo} currentView={currentView} />
             
-            {/* El contenido principal se ajusta para no ser tapado por las barras de navegación */}
             <main className="flex-grow w-full sm:ml-20 pt-24 sm:pt-0">
                 {renderView()}
             </main>
