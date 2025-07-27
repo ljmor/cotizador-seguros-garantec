@@ -315,7 +315,7 @@ export default function Form_Salud({ navigateTo, cotizacionIdParaEditar = null }
                 <aside className="hidden lg:block w-1/3 bg-[#6074F3] p-8 sticky top-0 h-screen">
                     <div className="flex flex-col items-center justify-center h-full">
                         <div className="w-full bg-gray-300 rounded-2xl shadow-2xl overflow-hidden aspect-w-9 aspect-h-16">
-                            <img src="/src/assets/img_form_salud.png" alt="Doctora sonriendo a un paciente" className="w-full h-full object-cover" />
+                            <img src="./assets/img_form_salud.png" alt="Doctora sonriendo a un paciente" className="w-full h-full object-cover" />
                         </div>
                         <p className="text-center mt-6 text-3xl font-bold text-white tracking-wider">abc<span className="font-light">seguros</span></p>
                     </div>

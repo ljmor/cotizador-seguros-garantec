@@ -5,6 +5,9 @@ import Landing from './Landing.jsx';
 import Form_Vida from './Cotization_Forms/Form_Vida.jsx';
 import Form_Salud from './Cotization_Forms/Form_Salud.jsx';
 import Contactos from './Pages/Contactos.jsx';
+import Form_Auto from './Cotization_Forms/Form_Auto.jsx';
+import PosiblesClientes from './Pages/PosiblesClientes.jsx';
+import Oportunidades from './Pages/Oportunidades.jsx';
 
 // --- Iconos para la Barra Lateral ---
 const HomeIcon = ({ className = "h-7 w-7" }) => (
@@ -90,7 +93,7 @@ const MobileTopBar = ({ navigateTo, currentView }) => {
 // --- Componente Principal de la Aplicación ---
 export default function App() {
     const [currentView, setCurrentView] = useState('landing');
-    
+
     // --- AÑADIDO: Estado para guardar el ID de la cotización a editar ---
     const [editingId, setEditingId] = useState(null);
 
@@ -111,10 +114,15 @@ export default function App() {
             case 'form-salud':
                 // Le pasamos el ID para editar. Será 'null' si es una cotización nueva.
                 return <Form_Salud navigateTo={navigateTo} cotizacionIdParaEditar={editingId} />;
+            case 'form-auto':
+                // Le pasamos el ID para editar. Será 'null' si es una cotización nueva.
+                return <Form_Auto navigateTo={navigateTo} cotizacionIdParaEditar={editingId} />;
+            case 'posibles-clientes':
+                return <PosiblesClientes navigateTo={navigateTo} />;
             case 'contactos':
                 return <Contactos navigateTo={navigateTo} />;
             case 'oportunidades':
-                return <div className="p-8 text-center"><h1>Vista de Oportunidades</h1><p>Contenido futuro.</p></div>;
+                return <Oportunidades navigateTo={navigateTo} />;
             default:
                 return <Landing navigateTo={navigateTo} />;
         }
@@ -124,7 +132,7 @@ export default function App() {
         <div className="bg-gray-50 flex min-h-screen font-sans">
             <DesktopSidebar navigateTo={navigateTo} currentView={currentView} />
             <MobileTopBar navigateTo={navigateTo} currentView={currentView} />
-            
+
             <main className="flex-grow w-full sm:ml-20 pt-24 sm:pt-0">
                 {renderView()}
             </main>
