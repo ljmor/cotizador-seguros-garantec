@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FaCarAlt, FaHandHoldingHeart } from 'react-icons/fa';
 import { RiStethoscopeFill } from 'react-icons/ri';
+import { motion } from 'framer-motion';
 
-// --- Iconos (sin cambios) ---
+// --- Iconos ---
 const HandHeartIcon = () => <FaHandHoldingHeart className="h-12 w-12 text-yellow-400"/>;
 const StethoscopeIcon = () => <RiStethoscopeFill className="h-12 w-12 text-blue-500"/>;
 const CarIcon = () => <FaCarAlt className="h-12 w-12 text-gray-800"/>;
@@ -17,48 +18,53 @@ const EditIcon = () => (
   </svg>
 );
 
-// --- MODIFICADO: Sub-componente QuoteCard ahora recibe la función navigateTo ---
+// --- Sub-componente para la Tarjeta de Cotización ---
 const QuoteCard = ({ quote, navigateTo }) => {
     // Determina a qué vista navegar basado en el tipo de seguro
     const getFormView = (type) => {
-        const view = type.toLowerCase(); // 'Vida' -> 'vida', 'Salud' -> 'salud'
-        if (view === 'vida' || view === 'salud') {
+        const view = type.toLowerCase();
+        if (view === 'vida' || view === 'salud' || view === 'auto') {
             return `form-${view}`;
         }
         return 'landing'; // Vista por defecto si el tipo no coincide
     };
 
     return (
-        <div className="bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 mb-4 shadow-sm hover:shadow-md transition-shadow">
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 mb-4 shadow-sm hover:shadow-md transition-shadow">
             <div className="bg-gray-100 p-3 rounded-2xl flex-shrink-0"><UserIcon /></div>
             <div className="flex-grow text-center sm:text-left">
               <h3 className="font-bold text-gray-800">Seguro de {quote.type} - {quote.name}</h3>
               <p className="text-sm text-gray-500">{quote.location} • {quote.status} • {quote.details}</p>
               <p className="text-xs text-gray-400 mt-1">
-    {new Date(quote.time).toLocaleString('es-EC', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false
-    })}
-</p>
+                {new Date(quote.time).toLocaleString('es-EC', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false
+                })}
+              </p>
             </div>
             <div className="flex items-center gap-4 w-full sm:w-auto mt-4 sm:mt-0">
                 <div className="w-full flex-grow sm:w-32">
                     <div className="flex justify-between mb-1"><span className="text-sm font-medium text-indigo-700">{quote.progress}%</span></div>
                     <div className="w-full bg-gray-200 rounded-full h-2"><div className="bg-indigo-600 h-2 rounded-full" style={{ width: `${quote.progress}%` }}></div></div>
                 </div>
-              {/* --- MODIFICADO: El botón ahora tiene una función onClick --- */}
-              <button 
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => navigateTo(getFormView(quote.type), quote.id)}
                 className="flex items-center gap-2 text-sm text-indigo-600 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-50 transition-colors"
               >
                 Editar <EditIcon />
-              </button>
+              </motion.button>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
@@ -93,9 +99,13 @@ export default function Landing({ navigateTo }) {
     fetchCotizaciones();
   }, []);
 
+  // --- LÓGICA DE FILTRADO ---
+  const cotizacionesIncompletas = cotizaciones.filter(quote => quote.progress < 100);
+  const cotizacionesCompletas = cotizaciones.filter(quote => quote.progress === 100);
+
   return (
     <div className="p-4 md:p-8 w-full h-full">
-      {/* --- Sección Hero (sin cambios) --- */}
+      {/* --- Sección Hero --- */}
       <section className="bg-[#6074F3] text-white p-8 rounded-3xl shadow-lg flex flex-col lg:flex-row items-center justify-between">
         <div className="text-center lg:text-left mb-8 lg:mb-0">
           <h1 className="text-4xl md:text-5xl font-bold">Inicia tu cotización</h1>
@@ -103,17 +113,35 @@ export default function Landing({ navigateTo }) {
         </div>
         <div className="flex items-end justify-center space-x-4 md:space-x-8">
           {insuranceTypes.map((type) => (
-            <div key={type.id} className="flex flex-col items-center text-center cursor-pointer" onClick={() => navigateTo(type.view)}>
+            <motion.div 
+                key={type.id} 
+                whileHover={{ y: -5 }}
+                className="flex flex-col items-center text-center cursor-pointer" 
+                onClick={() => navigateTo(type.view)}
+            >
               <p className="font-bold text-lg mb-2">{type.name}</p>
               <div className="bg-white rounded-full w-24 h-24 md:w-28 md:h-28 flex items-center justify-center shadow-md">{type.icon}</div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
-      {/* --- Pestañas de Filtro (sin cambios) --- */}
+      {/* --- Pestañas de Filtro --- */}
       <div className="flex justify-center my-8">
-          {/* ... tu código de pestañas no cambia ... */}
+        <div className="flex space-x-2 bg-gray-200 p-1 rounded-full">
+            <button
+                onClick={() => setActiveTab('incompletas')}
+                className={`px-6 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'incompletas' ? 'bg-[#6074F3] text-white shadow' : 'text-gray-600 hover:bg-gray-300'}`}
+            >
+                Cotizaciones incompletas
+            </button>
+            <button
+                onClick={() => setActiveTab('completas')}
+                className={`px-6 py-2 text-sm font-semibold rounded-full transition-colors ${activeTab === 'completas' ? 'bg-[#6074F3] text-white shadow' : 'text-gray-600 hover:bg-gray-300'}`}
+            >
+                Cotizaciones Completas
+            </button>
+        </div>
       </div>
 
       {/* --- Lista de Cotizaciones --- */}
@@ -125,14 +153,17 @@ export default function Landing({ navigateTo }) {
           {cargando ? (
             <p className="text-center text-gray-500 py-8">Cargando cotizaciones...</p>
           ) : activeTab === 'incompletas' ? (
-            cotizaciones.length > 0 ? (
-              // --- MODIFICADO: Pasamos la función navigateTo a cada QuoteCard ---
-              cotizaciones.map((quote) => <QuoteCard key={quote.id} quote={quote} navigateTo={navigateTo} />)
+            cotizacionesIncompletas.length > 0 ? (
+              cotizacionesIncompletas.map((quote) => <QuoteCard key={quote.id} quote={quote} navigateTo={navigateTo} />)
             ) : (
               <p className="text-center text-gray-500 py-8">No hay cotizaciones por terminar.</p>
             )
           ) : (
-            <p className="text-center text-gray-500 py-8">No hay cotizaciones completadas.</p>
+            cotizacionesCompletas.length > 0 ? (
+                cotizacionesCompletas.map((quote) => <QuoteCard key={quote.id} quote={quote} navigateTo={navigateTo} />)
+            ) : (
+                <p className="text-center text-gray-500 py-8">No hay cotizaciones completadas.</p>
+            )
           )}
         </div>
       </div>

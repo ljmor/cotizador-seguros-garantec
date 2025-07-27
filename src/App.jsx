@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import Landing from './Landing.jsx';
 import Form_Vida from './Cotization_Forms/Form_Vida.jsx';
 import Form_Salud from './Cotization_Forms/Form_Salud.jsx';
-import Contactos from './Pages/Contactos.jsx';
 import Form_Auto from './Cotization_Forms/Form_Auto.jsx';
+import Contactos from './Pages/Contactos.jsx';
 import PosiblesClientes from './Pages/PosiblesClientes.jsx';
 import Oportunidades from './Pages/Oportunidades.jsx';
 
@@ -93,7 +93,7 @@ const MobileTopBar = ({ navigateTo, currentView }) => {
 // --- Componente Principal de la Aplicación ---
 export default function App() {
     const [currentView, setCurrentView] = useState('landing');
-
+    
     // --- AÑADIDO: Estado para guardar el ID de la cotización a editar ---
     const [editingId, setEditingId] = useState(null);
 
@@ -109,13 +109,10 @@ export default function App() {
             case 'landing':
                 return <Landing navigateTo={navigateTo} />;
             case 'form-vida':
-                // Le pasamos el ID para editar. Será 'null' si es una cotización nueva.
                 return <Form_Vida navigateTo={navigateTo} cotizacionIdParaEditar={editingId} />;
             case 'form-salud':
-                // Le pasamos el ID para editar. Será 'null' si es una cotización nueva.
                 return <Form_Salud navigateTo={navigateTo} cotizacionIdParaEditar={editingId} />;
             case 'form-auto':
-                // Le pasamos el ID para editar. Será 'null' si es una cotización nueva.
                 return <Form_Auto navigateTo={navigateTo} cotizacionIdParaEditar={editingId} />;
             case 'posibles-clientes':
                 return <PosiblesClientes navigateTo={navigateTo} />;
@@ -132,7 +129,7 @@ export default function App() {
         <div className="bg-gray-50 flex min-h-screen font-sans">
             <DesktopSidebar navigateTo={navigateTo} currentView={currentView} />
             <MobileTopBar navigateTo={navigateTo} currentView={currentView} />
-
+            
             <main className="flex-grow w-full sm:ml-20 pt-24 sm:pt-0">
                 {renderView()}
             </main>

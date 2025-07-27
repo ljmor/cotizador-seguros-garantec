@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { FiUsers, FiUserCheck, FiMonitor, FiChevronDown, FiSearch, FiMail, FiPhone, FiMapPin, FiShield } from 'react-icons/fi';
-import { FaCarAlt, FaHandHoldingHeart } from 'react-icons/fa';
-import { RiStethoscopeFill } from 'react-icons/ri';
+import React, { useState, useEffect } from 'react';
+import { FiUsers, FiPhone, FiMail, FiChevronDown, FiSearch, FiX, FiMapPin, FiTag } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Icono de Flecha para Volver ---
 const BackArrowIcon = () => (
@@ -10,99 +9,10 @@ const BackArrowIcon = () => (
     </svg>
 );
 
-// --- Iconos para tipos de seguro ---
-const VidaIcon = () => <FaHandHoldingHeart className="h-4 w-4 text-yellow-500" />;
-const SaludIcon = () => <RiStethoscopeFill className="h-4 w-4 text-blue-500" />;
-const AutoIcon = () => <FaCarAlt className="h-4 w-4 text-green-500" />;
-
-// --- Datos de ejemplo para la tabla de contactos ---
-const initialContactsData = [
-    { 
-        id: 1, 
-        nombre: 'María José Álvarez', 
-        tipoSeguro: 'Vida', 
-        email: 'maria.alvarez@gmail.com', 
-        telefono: '(593) 987-654-321', 
-        provincia: 'Loja', 
-        canton: 'Loja', 
-        fechaRegistro: '2025-07-20'
-    },
-    { 
-        id: 2, 
-        nombre: 'Carlos Eduardo Morales', 
-        tipoSeguro: 'Auto', 
-        email: 'carlos.morales@hotmail.com', 
-        telefono: '(593) 998-123-456', 
-        provincia: 'Pichincha', 
-        canton: 'Quito', 
-        fechaRegistro: '2025-07-18'
-    },
-    { 
-        id: 3, 
-        nombre: 'Ana Patricia González', 
-        tipoSeguro: 'Salud', 
-        email: 'ana.gonzalez@empresa.com', 
-        telefono: '(593) 987-321-654', 
-        provincia: 'Guayas', 
-        canton: 'Guayaquil', 
-        fechaRegistro: '2025-07-15'
-    },
-    { 
-        id: 4, 
-        nombre: 'Roberto Silva Mendoza', 
-        tipoSeguro: 'Vida', 
-        email: '', 
-        telefono: '(593) 999-888-777', 
-        provincia: 'Azuay', 
-        canton: 'Cuenca', 
-        fechaRegistro: '2025-07-12'
-    },
-    { 
-        id: 5, 
-        nombre: 'Laura Vásquez Torres', 
-        tipoSeguro: 'Auto', 
-        email: 'laura.vasquez@gmail.com', 
-        telefono: '(593) 987-555-666', 
-        provincia: 'Loja', 
-        canton: 'Catamayo', 
-        fechaRegistro: '2025-07-10'
-    },
-    { 
-        id: 6, 
-        nombre: 'Diego Fernando Castro', 
-        tipoSeguro: 'Salud', 
-        email: 'diego.castro@yahoo.com', 
-        telefono: '', 
-        provincia: 'Manabí', 
-        canton: 'Manta', 
-        fechaRegistro: '2025-07-08'
-    },
-    { 
-        id: 7, 
-        nombre: 'Patricia Ramírez López', 
-        tipoSeguro: 'Vida', 
-        email: 'patricia.ramirez@outlook.com', 
-        telefono: '(593) 998-444-555', 
-        provincia: 'Loja', 
-        canton: 'Loja', 
-        fechaRegistro: '2025-07-05'
-    },
-    { 
-        id: 8, 
-        nombre: 'Fernando Jiménez Mora', 
-        tipoSeguro: 'Auto', 
-        email: 'fernando.jimenez@empresa.ec', 
-        telefono: '(593) 987-777-888', 
-        provincia: 'Tungurahua', 
-        canton: 'Ambato', 
-        fechaRegistro: '2025-07-02'
-    },
-];
-
 // --- Componente de Tarjeta de Estadísticas ---
 const StatCard = ({ icon, title, value, detail, detailColor }) => (
-    <div className="bg-white p-6 rounded-2xl flex items-center gap-5 transform transition-all duration-200 hover:scale-105">
-        <div className="bg-teal-100 text-teal-500 p-4 rounded-full">
+    <div className="bg-white p-6 rounded-2xl flex items-center gap-5 shadow-sm">
+        <div className="bg-indigo-100 text-indigo-500 p-4 rounded-full">
             {icon}
         </div>
         <div>
@@ -113,163 +23,183 @@ const StatCard = ({ icon, title, value, detail, detailColor }) => (
     </div>
 );
 
-// --- Componente de Etiqueta de Estado ---
-// Componente eliminado ya que no se usa la columna de estado
+// --- Componente de Modal para Agregar/Editar Contacto ---
+const AddContactModal = ({ isOpen, onClose, onSave, editingContact = null }) => {
+    const [formData, setFormData] = useState({});
+    
+    useEffect(() => {
+        if (isOpen) {
+            if (editingContact) {
+                setFormData({
+                    nombres: editingContact.nombres || '',
+                    apellidos: editingContact.apellidos || '',
+                    telefono: editingContact.phone || '',
+                    email: editingContact.email || ''
+                });
+            } else {
+                setFormData({ nombres: '', apellidos: '', telefono: '', email: '' });
+            }
+        }
+    }, [editingContact, isOpen]);
 
-// --- Componente de Icono de Tipo de Seguro ---
-const InsuranceTypeIcon = ({ type }) => {
-    switch (type) {
-        case 'Vida':
-            return <VidaIcon />;
-        case 'Salud':
-            return <SaludIcon />;
-        case 'Auto':
-            return <AutoIcon />;
-        default:
-            return <FiShield className="h-4 w-4 text-gray-500" />;
-    }
-};
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
-// --- Componente de Dropdown para Agregar Contacto ---
-const AddContactDropdown = ({ isOpen, onClose, navigateTo }) => {
-    const insuranceOptions = [
-        { id: 'vida', name: 'Seguro de Vida', icon: <VidaIcon />, view: 'form-vida' },
-        { id: 'salud', name: 'Seguro de Salud', icon: <SaludIcon />, view: 'form-salud' },
-        { id: 'auto', name: 'Seguro de Auto', icon: <AutoIcon />, view: 'form-auto' },
-    ];
-
-    if (!isOpen) return null;
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (formData.nombres && formData.nombres.trim()) {
+            onSave(formData, editingContact);
+        }
+    };
 
     return (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 z-50 transform transition-all duration-200 ease-out">
-            <div className="p-2">
-                <div className="text-sm font-medium text-gray-600 px-3 py-2 border-b border-gray-100">
-                    Seleccionar tipo de seguro
-                </div>
-                {insuranceOptions.map((option) => (
-                    <button
-                        key={option.id}
-                        onClick={() => {
-                            navigateTo(option.view);
-                            onClose();
-                        }}
-                        className="w-full flex items-center gap-3 px-3 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors duration-200"
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-gray-900 bg-opacity-40 backdrop-blur-sm"
+                    onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+                >
+                    <motion.div 
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl"
                     >
-                        <div className="flex-shrink-0">
-                            {option.icon}
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-bold text-gray-800">{editingContact ? 'Editar Contacto' : 'Agregar Contacto'}</h2>
+                                <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-all duration-200 hover:bg-gray-100 rounded-full p-2 hover:scale-110"><FiX size={24} /></button>
+                            </div>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <input type="text" name="nombres" value={formData.nombres || ''} onChange={handleInputChange} required placeholder="Nombre *" className="w-full px-4 py-2 border rounded-lg" />
+                                <input type="text" name="apellidos" value={formData.apellidos || ''} onChange={handleInputChange} placeholder="Apellido" className="w-full px-4 py-2 border rounded-lg" />
+                                <input type="tel" name="telefono" value={formData.telefono || ''} onChange={handleInputChange} placeholder="Teléfono" className="w-full px-4 py-2 border rounded-lg" />
+                                <input type="email" name="email" value={formData.email || ''} onChange={handleInputChange} placeholder="Correo" className="w-full px-4 py-2 border rounded-lg" />
+                                <div className="flex gap-3 pt-4">
+                                    <button type="button" onClick={onClose} className="flex-1 px-4 py-2 rounded-lg text-gray-600 font-semibold border hover:bg-gray-50">Cancelar</button>
+                                    <button type="submit" className="flex-1 px-4 py-2 rounded-lg bg-teal-400 text-white font-semibold hover:bg-teal-500">{editingContact ? 'Actualizar' : 'Guardar'}</button>
+                                </div>
+                            </form>
                         </div>
-                        <span className="text-sm font-medium text-gray-700">{option.name}</span>
-                    </button>
-                ))}
-            </div>
-        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 };
 
 // --- Componente Principal de la Página de Contactos ---
 export default function Contactos({ navigateTo }) {
-    const [contactsData, setContactsData] = useState(initialContactsData);
+    const [contactsData, setContactsData] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingContact, setEditingContact] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const fetchContacts = async () => {
+        setCargando(true);
+        try {
+            const respuesta = await fetch('http://localhost:5000/api/cotizaciones');
+            const data = await respuesta.json();
+            setContactsData(data); // Obtenemos TODOS los contactos
+        } catch (error) {
+            console.error("Error al obtener los contactos:", error);
+        } finally {
+            setCargando(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchContacts();
+    }, []);
+
+    const handleSaveContact = async (formData, contactToEdit) => {
+        const esActualizacion = !!contactToEdit;
+        const url = esActualizacion ? `http://localhost:5000/api/cotizaciones/${contactToEdit.id}` : 'http://localhost:5000/api/cotizaciones';
+        const method = esActualizacion ? 'PUT' : 'POST';
+
+        const payload = {
+            ...contactToEdit,
+            ...formData,
+            tipoSeguroPrincipal: contactToEdit?.type || 'Indefinido',
+        };
+        
+        try {
+            const respuesta = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (!respuesta.ok) throw new Error('Error al guardar el contacto');
+            
+            handleCloseModal();
+            fetchContacts(); // Refresca la lista después de guardar
+        } catch (error) {
+            console.error("Error al guardar:", error);
+        }
+    };
+
+    const handleEditContact = (contact) => {
+        setEditingContact(contact);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setEditingContact(null);
+    };
 
     const filteredContacts = contactsData.filter(contact =>
-        contact.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.tipoSeguro.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.telefono.includes(searchTerm)
+        (contact.nombres + ' ' + contact.apellidos).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (contact.phone && contact.phone.includes(searchTerm)) ||
+        (contact.email && contact.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
-    };
+    const formatDate = (dateString) => new Date(dateString).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    if (cargando) {
+        return <div className="p-8 text-center text-xl font-semibold">Cargando contactos...</div>;
+    }
 
     return (
         <div className="bg-slate-50 font-sans w-full min-h-screen p-6 sm:p-8 md:p-12">
             <main className="max-w-7xl mx-auto">
-                {/* --- Cabecera --- */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-                     <button onClick={() => navigateTo('landing')} className="flex items-center gap-2 text-gray-500 font-semibold hover:text-indigo-600 mb-4 sm:mb-0 transition-all duration-200 hover:scale-105">
+                    <button onClick={() => navigateTo('landing')} className="flex items-center gap-2 text-gray-500 font-semibold hover:text-indigo-600 mb-4 sm:mb-0 transition">
                         <BackArrowIcon /> Volver
                     </button>
                     <h1 className="text-4xl md:text-5xl font-bold text-indigo-700 flex-grow sm:text-center">Contactos</h1>
-                    <div className="relative">
-                        <button 
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="mt-4 sm:mt-0 px-5 py-3 rounded-lg bg-teal-400 text-white font-semibold hover:bg-teal-500 transition-all duration-200 shadow-md hover:shadow-xl transform hover:scale-105 active:scale-95 flex items-center gap-2"
-                        >
-                            Agregar Contacto +
-                            <FiChevronDown className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        <AddContactDropdown 
-                            isOpen={isDropdownOpen}
-                            onClose={() => setIsDropdownOpen(false)}
-                            navigateTo={navigateTo}
-                        />
-                    </div>
+                    <button onClick={() => setIsModalOpen(true)} className="mt-4 sm:mt-0 px-5 py-3 rounded-lg bg-teal-400 text-white font-semibold hover:bg-teal-500 transition-all duration-200 shadow-md hover:shadow-xl transform hover:scale-105 active:scale-95">
+                        Agregar Contacto +
+                    </button>
                 </div>
 
-                {/* --- Sección de Estadísticas --- */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    <StatCard 
-                        icon={<FiUsers size={24} />}
-                        title="Contactos totales"
-                        value={contactsData.length.toString()}
-                        detail={`↑ ${Math.floor(contactsData.length * 0.15)} nuevos este mes`}
-                        detailColor="text-green-600"
-                    />
-                    <StatCard 
-                        icon={<FiMail size={24} />}
-                        title="Con email"
-                        value={contactsData.filter(contact => contact.email).length.toString()}
-                        detail={`${Math.round((contactsData.filter(contact => contact.email).length / contactsData.length) * 100)}% contactables`}
-                        detailColor="text-blue-600"
-                    />
-                    <StatCard 
-                        icon={<FiPhone size={24} />}
-                        title="Con teléfono"
-                        value={contactsData.filter(contact => contact.telefono).length.toString()}
-                        detail={`${Math.round((contactsData.filter(contact => contact.telefono).length / contactsData.length) * 100)}% llamables`}
-                        detailColor="text-green-600"
-                    />
+                    <StatCard icon={<FiUsers size={24} />} title="Contactos Totales" value={contactsData.length.toString()} detail="↑ 1 nuevo este mes" detailColor="text-green-600" />
+                    <StatCard icon={<FiMail size={24} />} title="Con Email" value={contactsData.filter(c => c.email).length.toString()} detail={`${Math.round((contactsData.filter(c => c.email).length / (contactsData.length || 1)) * 100)}% contactables`} detailColor="text-blue-600" />
+                    <StatCard icon={<FiPhone size={24} />} title="Con Teléfono" value={contactsData.filter(c => c.phone).length.toString()} detail={`${Math.round((contactsData.filter(c => c.phone).length / (contactsData.length || 1)) * 100)}% llamables`} detailColor="text-purple-600" />
                 </div>
 
-                {/* --- Tabla de Contactos --- */}
                 <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                         <div>
                             <h2 className="text-xl font-bold text-gray-800">Todos los Contactos</h2>
-                            <p className="text-sm text-teal-600 font-medium">Clientes registrados</p>
+                            <p className="text-sm text-gray-500 font-medium">Clientes registrados</p>
                         </div>
                         <div className="flex items-center gap-4 w-full md:w-auto">
                             <div className="relative w-full md:w-auto">
                                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Buscar contactos..." 
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full md:w-64 pl-10 pr-4 py-2 bg-slate-100 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all duration-200 focus:scale-105" 
-                                />
-                            </div>
-                            <div className="relative">
-                                <select className="appearance-none w-full md:w-auto pl-4 pr-10 py-2 bg-slate-100 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm font-medium text-gray-600">
-                                    <option>Ordenar: Más reciente</option>
-                                    <option>Más antiguo</option>
-                                    <option>Nombre A-Z</option>
-                                    <option>Nombre Z-A</option>
-                                    <option>Por tipo de seguro</option>
-                                </select>
-                                <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                <input type="text" placeholder="Buscar contactos..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full md:w-64 pl-10 pr-4 py-2 bg-slate-100 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition" />
                             </div>
                         </div>
                     </div>
                     
-                    {/* --- Contenedor de la Tabla para Desplazamiento --- */}
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left text-gray-600">
                             <thead className="text-xs text-gray-500 uppercase bg-slate-50">
@@ -284,64 +214,23 @@ export default function Contactos({ navigateTo }) {
                             </thead>
                             <tbody>
                                 {filteredContacts.map((contact) => (
-                                    <tr key={contact.id} className="bg-white border-b hover:bg-slate-50 transition-colors duration-200">
-                                        <td className="px-6 py-4 font-medium text-gray-900">{contact.nombre}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <InsuranceTypeIcon type={contact.tipoSeguro} />
-                                                <span>{contact.tipoSeguro}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {contact.email ? (
-                                                <div className="flex items-center gap-2">
-                                                    <FiMail className="text-blue-500" size={14} />
-                                                    <span className="truncate max-w-[150px]">{contact.email}</span>
-                                                </div>
-                                            ) : (
-                                                <span className="text-gray-400">Sin email</span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            {contact.telefono ? (
-                                                <div className="flex items-center gap-2">
-                                                    <FiPhone className="text-green-500" size={14} />
-                                                    <span>{contact.telefono}</span>
-                                                </div>
-                                            ) : (
-                                                <span className="text-gray-400">Sin teléfono</span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                <FiMapPin className="text-gray-400" size={14} />
-                                                <span className="truncate max-w-[100px]">{contact.provincia}, {contact.canton}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span>{formatDate(contact.fechaRegistro)}</span>
-                                        </td>
+                                    <tr key={contact.id} className="bg-white border-b hover:bg-slate-50 cursor-pointer transition-colors duration-200" onClick={() => handleEditContact(contact)}>
+                                        <td className="px-6 py-4 font-medium text-gray-900">{contact.nombres} {contact.apellidos}</td>
+                                        <td className="px-6 py-4"><div className="flex items-center gap-2"><FiTag className="text-gray-400" size={14} /><span>{contact.type}</span></div></td>
+                                        <td className="px-6 py-4">{contact.email ? <div className="flex items-center gap-2"><FiMail className="text-blue-500" size={14} /><span className="truncate max-w-[150px]">{contact.email}</span></div> : <span className="text-gray-400">Sin email</span>}</td>
+                                        <td className="px-6 py-4">{contact.phone ? <div className="flex items-center gap-2"><FiPhone className="text-green-500" size={14} /><span>{contact.phone}</span></div> : <span className="text-gray-400">Sin teléfono</span>}</td>
+                                        <td className="px-6 py-4"><div className="flex items-center gap-2"><FiMapPin className="text-orange-500" size={14} /><span>{contact.location}</span></div></td>
+                                        <td className="px-6 py-4">{formatDate(contact.time)}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-                    
-                    {filteredContacts.length === 0 && (
-                        <div className="text-center py-8">
-                            <p className="text-gray-500">No se encontraron contactos que coincidan con la búsqueda.</p>
-                        </div>
-                    )}
+                    {filteredContacts.length === 0 && (<div className="text-center py-8"><p className="text-gray-500">No se encontraron contactos.</p></div>)}
                 </div>
-
-                {/* Overlay para cerrar dropdown cuando se hace clic fuera */}
-                {isDropdownOpen && (
-                    <div 
-                        className="fixed inset-0 z-40" 
-                        onClick={() => setIsDropdownOpen(false)}
-                    ></div>
-                )}
             </main>
+            
+            <AddContactModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveContact} editingContact={editingContact} />
         </div>
     );
 }
