@@ -181,9 +181,9 @@ export default function Contactos({ navigateTo }) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    <StatCard icon={<FiUsers size={24} />} title="Contactos Totales" value={contactsData.length.toString()} detail="↑ 1 nuevo este mes" detailColor="text-green-600" />
-                    <StatCard icon={<FiMail size={24} />} title="Con Email" value={contactsData.filter(c => c.email).length.toString()} detail={`${Math.round((contactsData.filter(c => c.email).length / (contactsData.length || 1)) * 100)}% contactables`} detailColor="text-blue-600" />
-                    <StatCard icon={<FiPhone size={24} />} title="Con Teléfono" value={contactsData.filter(c => c.phone).length.toString()} detail={`${Math.round((contactsData.filter(c => c.phone).length / (contactsData.length || 1)) * 100)}% llamables`} detailColor="text-purple-600" />
+                    <StatCard icon={<FiUsers size={30} />} title="Contactos Totales" value={contactsData.length.toString()} detail="↑ 1 nuevo este mes" detailColor="text-green-600" />
+                    <StatCard icon={<FiMail size={30} />} title="Con Email" value={contactsData.filter(c => c.email).length.toString()} detail={`${Math.round((contactsData.filter(c => c.email).length / (contactsData.length || 1)) * 100)}% contactables`} detailColor="text-blue-600" />
+                    <StatCard icon={<FiPhone size={30} />} title="Con Teléfono" value={contactsData.filter(c => c.phone).length.toString()} detail={`${Math.round((contactsData.filter(c => c.phone).length / (contactsData.length || 1)) * 100)}% llamables`} detailColor="text-purple-600" />
                 </div>
 
                 <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg">

@@ -101,6 +101,7 @@ def gestionar_cotizaciones():
                 
                 cotizaciones_lista.append({
                     'id': cotizacion.id,
+                    'sexo': cotizacion.sexo,
                     'type': cotizacion.tipoSeguroPrincipal,
                     'name': f"{cotizacion.nombres} {apellido_inicial}",
                     'nombres': cotizacion.nombres,
@@ -221,17 +222,19 @@ def obtener_oportunidades():
         oportunidades_lista = []
         for cotizacion in todas_las_cotizaciones:
             
+            # Valores por defecto
             estado_oportunidad = "Pendiente"
             valor_estimado = 0.0
-            prioridad = "Baja"
+            prioridad = "Baja" # Inicia como 'Baja' por defecto
 
             if cotizacion.plan_seleccionado_id:
                 plan = Plan.query.get(cotizacion.plan_seleccionado_id)
                 if plan:
                     estado_oportunidad = "Aceptada"
                     valor_estimado = cotizacion.precio_final or plan.precio
-                    prioridad = "Media"
+                    prioridad = "Media" # Una oportunidad cerrada es de prioridad media para seguimiento
             else:
+                # Lógica para cotizaciones incompletas
                 campos_requeridos = {}
                 if cotizacion.tipoSeguroPrincipal == 'Auto':
                     campos_requeridos = {'nombres': 1, 'apellidos': 1, 'marcaVehiculo': 2}
@@ -243,12 +246,17 @@ def obtener_oportunidades():
                 if campos_requeridos:
                     campos_llenos = sum(1 for campo in campos_requeridos if getattr(cotizacion, campo))
                     progreso = int((campos_llenos / len(campos_requeridos)) * 100) if len(campos_requeridos) > 0 else 0
+                    
+                    # --- LÓGICA DE PRIORIDAD CORREGIDA ---
                     if progreso >= 75:
                         estado_oportunidad = "Por confirmar"
                         prioridad = "Alta"
-                    elif progreso > 0:
+                    elif progreso > 30: # Progreso intermedio
                         estado_oportunidad = "Pendiente"
                         prioridad = "Media"
+                    elif progreso <= 30 : # Progreso bajo o cero
+                        estado_oportunidad = "Pendiente"
+                        prioridad = "Baja" # Ahora sí se asignará correctamente
 
             oportunidades_lista.append({
                 'id': cotizacion.id,

@@ -79,6 +79,7 @@ const PersonalDataStep = ({ onNext, onSaveContact, formData, handleChange }) => 
             <FormInput required label="Nombres completos" type="text" name="nombres" value={formData.nombres || ''} onChange={handleChange} />
             <FormInput required label="Apellidos completos" type="text" name="apellidos" value={formData.apellidos || ''} onChange={handleChange} />
             <FormInput label="Fecha de nacimiento" type="date" name="fechaNacimiento" value={formData.fechaNacimiento || ''} onChange={handleChange} />
+            <FormSelect required label="Sexo" name="sexo" value={formData.sexo || ''} onChange={handleChange}><option value="">Seleccione...</option><option value="Femenino">Femenino</option><option value="Masculino">Masculino</option></FormSelect>
             <FormInput required label="Cédula de identidad" type="text" name="cedula" value={formData.cedula || ''} onChange={handleChange} />
             <FormInput required label="Teléfono" type="text" name="telefono" value={formData.telefono || ''} onChange={handleChange} />
             <FormInput required label="E-mail" type="email" name="email" value={formData.email || ''} onChange={handleChange} />

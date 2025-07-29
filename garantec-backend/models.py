@@ -38,7 +38,7 @@ class Cotizacion(db.Model):
     placaVehiculo = db.Column(db.String(10), nullable=True)
     
     # --- AÑADIDO: Campos para el plan seleccionado ---
-    plan_seleccionado_id = db.Column(db.Integer, db.ForeignKey('plan.id'), nullable=True)
+    plan_seleccionado_id = db.Column(db.Integer, db.ForeignKey('plan.id', name='fk_cotizacion_plan'), nullable=True)
     precio_final = db.Column(db.Float, nullable=True)
 
     # --- Campos de Control ---
